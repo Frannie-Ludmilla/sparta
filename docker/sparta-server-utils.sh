@@ -497,4 +497,9 @@ if [ -v SPARTA_SECURITY_MANAGER_ENABLED ] && [ $SPARTA_SECURITY_MANAGER_ENABLED=
    sed -i "s|.*sparta.security.manager.enabled.*|sparta.security.manager.enabled = \""${SPARTA_SECURITY_MANAGER_ENABLED}"\"|" ${SPARTA_CONF_FILE}
    sed -i "s|.*sparta.security.manager.class.*|sparta.security.manager.class = \""${SPARTA_SECURITY_MANAGER_CLASS}"\"|" ${SPARTA_CONF_FILE}
 fi
+
+if [ -v SPARTA_SECURITY_MANAGER_ENABLED ] && [ -v SPARTA_SECURITY_MANAGER_AUDIT_ENABLED ] && [ ${#SPARTA_SECURITY_MANAGER_AUDIT_ENABLED} != 0 ]; then
+sed -i "s|.*sparta.security.manager.audit.*|sparta.security.manager.audit = \""${SPARTA_SECURITY_MANAGER_AUDIT_ENABLED}"\"|" ${SPARTA_CONF_FILE}
+fi
+
 }
