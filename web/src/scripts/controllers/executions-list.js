@@ -41,7 +41,6 @@
     vm.successMessage = {type: 'success', text: '', internalTrace: ''};
     vm.loading = true;
     vm.tableReverse = false;
-    vm.showInfo = showInfo;
     vm.showInfoModal = showInfoModal;
 
     init();
@@ -55,7 +54,7 @@
     function runPolicy(policyId, policyStatus, policyName) {
       if (policyStatus.toLowerCase() === 'notstarted' || policyStatus.toLowerCase() === 'failed' ||
           policyStatus.toLowerCase() === 'stopped' || policyStatus.toLowerCase() === 'stopping' ||
-           policyStatus.toLowerCase() === 'finished') {
+          policyStatus.toLowerCase() === 'killed') {
         var policyRunning = PolicyFactory.runPolicy(policyId);
 
         policyRunning.then(function() {
@@ -71,9 +70,10 @@
     }
 
     function stopPolicy(policyId, policyStatus, policyName) {
-      if (policyStatus.toLowerCase() !== 'notstarted' && policyStatus.toLowerCase() !== 'failed' &&
-       policyStatus.toLowerCase() !== 'stopped' && policyStatus.toLowerCase() !== 'stopping' &&
-        policyStatus.toLowerCase() !== 'finished') {
+      if (policyStatus.toLowerCase() !== 'notstarted' && policyStatus.toLowerCase() !== 'stopped' &&
+       policyStatus.toLowerCase() !== 'stopping' && policyStatus.toLowerCase() !== 'finished' &&
+       policyStatus.toLowerCase() !== 'killed') {
+
 
         var stopPolicy =
         {
@@ -158,40 +158,29 @@
       }
     }
 
-    function showInfo(policy){
-      PolicyFactory.getExecutionById(policy.id).then(function(execution){
-        showInfoModal(policy, execution);
-      }, function(error){
-        showInfoModal(policy);
-      });
-    }
-
-    function showInfoModal(policy, execution) {
+    function showInfoModal(policy) {
       var controller = 'PolicyInfoModalCtrl';
       var templateUrl = "templates/modal/policy-info-modal.tpl.html";
       var resolve = {
-        policyName: function () {
+        policyName: function() {
           return policy.name;
         },
-        policyDescription: function () {
+        policyDescription: function() {
           return policy.description;
         },
-        status: function () {
+        status: function() {
           return policy.status;
         },
-        statusInfo: function () {
+        statusInfo: function() {
           return policy.statusInfo;
         },
-        submissionId: function () {
+        submissionId: function() {
           return policy.submissionId;
         },
-        deployMode: function () {
+        deployMode: function() {
           return policy.lastExecutionMode;
         },
-        executionData: function() {
-          return execution;
-        },
-        error: function () {
+        error: function() {
           return policy.lastError;
         }
       };

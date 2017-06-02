@@ -1,21 +1,10 @@
 # Changelog
 
-## 1.5.0 (upcoming)
+## 1.3.1 (upcoming)
 
-* Pending changelog
-
-## 1.4.0 (May 17, 2017)
-
-* Update to Spark 2.1
-* Integration with HDFS securized
-* Integration with Kafka securized
-* Integration with Zookeeper securized
-* Save Kafka offsets in Kafka with Spark 2.1 API
-* Save transformations with writer
-* Save Raw Data step
-* Execution information with Spark properties
-* Updated SSO with GoSec
-* Added Postgres options
+* Bugfix: Create policy from scratch
+* Bugfix: Updated kafka input/output with last Spark integration with auto commit offsets
+* Bugfix: AutoDelete checkpoint enable by default
 
 ## 1.3.0 (April 07, 2017)
 

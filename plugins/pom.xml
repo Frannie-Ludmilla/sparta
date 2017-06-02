@@ -22,34 +22,62 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>com.stratio.sparta</groupId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.3.1-RC2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>plugins</artifactId>
 
     <properties>
         <morphline.version>0.17.0</morphline.version>
-        <cassandra.spark.version>2.0.1</cassandra.spark.version>
+        <cassandra.spark.version>1.5.0</cassandra.spark.version>
+        <decision.version>1.1.0</decision.version>
+        <avro.version>1.7.7</avro.version>
         <breeze.version>0.11.1</breeze.version>
+        <scalawebsocket.version>0.1.1</scalawebsocket.version>
         <amqp-client.version>3.5.1</amqp-client.version>
         <geo.version>0.6.7</geo.version>
         <json-path.version>2.2.0</json-path.version>
         <xpath.version>0.1.3</xpath.version>
-        <gson.version>2.8.0</gson.version>
-        <mongodb.spark.version>0.12.0</mongodb.spark.version>
-        <elastic.spark.version>5.3.0</elastic.spark.version>
-        <kafka.spark.version>2.1.0</kafka.spark.version>
-        <csv.spark.version>1.5.0</csv.spark.version>
-        <avro.spark.version>3.2.0</avro.spark.version>
-        <avro.version>1.7.6</avro.version>
-        <rabbitmq.spark.version>0.5.1</rabbitmq.spark.version>
-        <twitter.spark.version>2.1.0</twitter.spark.version>
-        <redis.version>2.15</redis.version>
-        <async.http.version>1.8.17</async.http.version>
+        <gson.version>2.3.1</gson.version>
+        <mongodb.spark.version>0.11.2</mongodb.spark.version>
+        <elastic.spark.version>2.3.2</elastic.spark.version>
+        <csv.spark.version>1.4.0</csv.spark.version>
+        <cassandra.spark.version>1.6.0</cassandra.spark.version>
+        <rabbitmq.spark.receiver>spark-rabbitmq_1.6</rabbitmq.spark.receiver>
     </properties>
 
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration>
+                            <sources>
+                                <source>src/${spark.version.folder}/scala</source>
+
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/${spark.version.folder}/test</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencies>
@@ -74,6 +102,20 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_${scala.binary.version}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-twitter_${scala.binary.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-flume_${scala.binary.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
@@ -84,23 +126,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_${scala.binary.version}</artifactId>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala.binary.version}</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.bahir</groupId>
-            <artifactId>spark-streaming-twitter_${scala.binary.version}</artifactId>
-            <version>${twitter.spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-flume_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.debasishg</groupId>
             <artifactId>redisclient_${scala.binary.version}</artifactId>
-            <version>${redis.version}</version>
+            <version>2.15</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.typesafe.akka</groupId>
@@ -110,13 +148,18 @@
         </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch-spark-20_${scala.binary.version}</artifactId>
+            <artifactId>elasticsearch-spark_${scala.binary.version}</artifactId>
             <version>${elastic.spark.version}</version>
         </dependency>
         <dependency>
             <groupId>com.datastax.spark</groupId>
             <artifactId>spark-cassandra-connector_${scala.binary.version}</artifactId>
             <version>${cassandra.spark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.databricks</groupId>
+            <artifactId>spark-csv_${scala.binary.version}</artifactId>
+            <version>${csv.spark.version}</version>
         </dependency>
         <dependency>
             <groupId>com.stratio.datasource</groupId>
@@ -154,12 +197,6 @@
             <groupId>org.kitesdk</groupId>
             <artifactId>kite-morphlines-solr-cell</artifactId>
             <version>${morphline.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.zookeeper</groupId>
-                    <artifactId>zookeeper</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.kitesdk</groupId>
@@ -173,7 +210,7 @@
         <dependency>
             <groupId>com.ning</groupId>
             <artifactId>async-http-client</artifactId>
-            <version>${async.http.version}</version>
+            <version>1.9.30</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -182,8 +219,8 @@
         </dependency>
         <dependency>
             <groupId>com.stratio.receiver</groupId>
-            <artifactId>spark-rabbitmq</artifactId>
-            <version>${rabbitmq.spark.version}</version>
+            <artifactId>${rabbitmq.spark.receiver}</artifactId>
+            <version>0.4.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.spark</groupId>
@@ -197,18 +234,27 @@
             <version>${geo.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.databricks</groupId>
-            <artifactId>spark-avro_${scala.binary.version}</artifactId>
-            <version>${avro.spark.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.databricks</groupId>
+            <artifactId>spark-avro_${scala.binary.version}</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.stratio.decision</groupId>
+            <artifactId>commons</artifactId>
+            <version>${decision.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.mortbay.jetty</groupId>
-                    <artifactId>servlet-api</artifactId>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka_${scala.binary.version}</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -227,25 +273,9 @@
             <version>${xpath.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.3-1104-jdbc4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
-            <version>${kafka.spark.version}</version>
-        </dependency>
-
-        <!--Test dependencies-->
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_${scala.binary.version}</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <groupId>com.github.sstone</groupId>
+            <artifactId>amqp-client_${scala.binary.version}</artifactId>
+            <version>1.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -255,10 +285,36 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.sstone</groupId>
-            <artifactId>amqp-client_${scala.binary.version}</artifactId>
-            <version>1.5</version>
-            <scope>test</scope>
+            <groupId>com.stratio.receiver</groupId>
+            <artifactId>spark-kafka</artifactId>
+            <version>0.2.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka_${scala.binary.version}</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.3-1104-jdbc4</version>
         </dependency>
     </dependencies>
 </project>
